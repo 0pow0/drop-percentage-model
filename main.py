@@ -62,7 +62,7 @@ def train(model, train_loader, device, optimizer, criterion, epoch):
 
         yhats = model((xs, lens_xs_padded))
 
-        loss = criterion(ys, yhats.data)
+        loss = criterion(ys, yhats)
 
         loss.backward()
 
