@@ -23,6 +23,7 @@ def set_parser():
     parser.add_argument("--checkpoint_dir", help="checkpoint dir", required=True, type=str)
     parser.add_argument("--eval_only", dest='eval_only', action='store_true')
     parser.add_argument("--lr_gamma", help='learning rate decay rate per step', required=True, type=float)
+    parser.add_argument("--cuda_device", help="cude device index", required=True, type=str)
     args, unknown = parser.parse_known_args()
     return args
 
@@ -41,6 +42,7 @@ def val(model, val_loader, device, criterion, epoch, batch_size):
         for batch_idx, data in enumerate(val_loader):
             x = data['x'].to(device).float()
             yhat = data['y'].to(device).float()
+            x = x.unsqueeze(0)
             y = model(x)
             loss = criterion(y, yhat.data)
             val_loss = val_loss + loss
@@ -96,7 +98,7 @@ def main():
 
     torch.manual_seed(0)
 
-    device = torch.device('cuda:3')
+    device = torch.device('cuda:' + args.cuda_device)
 
     print('=' * 50 + "loading data and instantiating data loader" + '=' * 50)
     train_dataloader, val_dataloader, train_dataset, val_dataset = split_data(args.train_folder, args.val_folder)
